@@ -42,6 +42,7 @@ server {
         #NOTE: You should have "cgi.fix_pathinfo = 0;" in php.ini
         include fastcgi_params;
         fastcgi_intercept_errors on;
+        # FPM_HOST: "laravel.fpm:9000", 定義在 docker-compose.yml
         fastcgi_pass ${FPM_HOST};
         fastcgi_param SCRIPT_FILENAME $document_root/$fastcgi_script_name;
     }

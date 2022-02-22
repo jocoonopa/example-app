@@ -69,11 +69,11 @@ RUN npm install && \
 # It contains all the Composer packages,
 # and just the basic CLI "stuff" in order for us to run commands,
 # be that queues, migrations, tinker etc.
-FROM php:8.0-alpine as cli
+FROM php:8.1-alpine as cli
 
 # We need to declare that we want to use the args in this build step
 ARG PHP_EXTS="bcmath ctype fileinfo mbstring pdo pdo_mysql dom pcntl"
-# ARG PHP_PECL_EXTS="redis"
+ARG PHP_PECL_EXTS="redis"
 
 WORKDIR /opt/apps/laravel-in-kubernetes
 
@@ -82,8 +82,8 @@ WORKDIR /opt/apps/laravel-in-kubernetes
 # You can see a list of required extensions for Laravel here: https://laravel.com/docs/8.x/deployment#server-requirements
 RUN apk add --virtual build-dependencies --no-cache ${PHPIZE_DEPS} openssl ca-certificates libxml2-dev oniguruma-dev && \
     docker-php-ext-install -j$(nproc) ${PHP_EXTS} && \
-    # pecl install ${PHP_PECL_EXTS} && \
-    # docker-php-ext-enable ${PHP_PECL_EXTS} && \
+    pecl install ${PHP_PECL_EXTS} && \
+    docker-php-ext-enable ${PHP_PECL_EXTS} && \
     apk del build-dependencies
 
 # Next we have to copy in our code base from our initial build which we installed in the previous stage
@@ -94,18 +94,18 @@ COPY --from=composer_base /opt/apps/laravel-in-kubernetes /opt/apps/laravel-in-k
 COPY --from=frontend /opt/apps/laravel-in-kubernetes/public /opt/apps/laravel-in-kubernetes/public
 
 # We need a stage which contains FPM to actually run and process requests to our PHP application.
-FROM php:8.0-fpm-alpine as fpm_server
+FROM php:8.1-fpm-alpine as fpm_server
 
 # We need to declare that we want to use the args in this build step
 ARG PHP_EXTS="bcmath ctype fileinfo mbstring pdo pdo_mysql dom pcntl"
-# ARG PHP_PECL_EXTS
+ARG PHP_PECL_EXTS="redis"
 
 WORKDIR /opt/apps/laravel-in-kubernetes
 
 RUN apk add --virtual build-dependencies --no-cache ${PHPIZE_DEPS} openssl ca-certificates libxml2-dev oniguruma-dev && \
     docker-php-ext-install -j$(nproc) ${PHP_EXTS} && \
-    # pecl install ${PHP_PECL_EXTS} && \
-    # docker-php-ext-enable ${PHP_PECL_EXTS} && \
+    pecl install ${PHP_PECL_EXTS} && \
+    docker-php-ext-enable ${PHP_PECL_EXTS} && \
     apk del build-dependencies
 
 # As FPM uses the www-data user when running our application,
