@@ -1,0 +1,32 @@
+name: 'Docker Build And Push to registry GitHub Action'
+description: 'Docker Build And Push to registry GitHub Action'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Login to docker registry if private registry
+      run: |
+        if [ ${{ secrets.GITLAB_USERNAME }} ]
+        then
+          sudo docker login ${{ secrets.GITLAB_REGISTRY_URL }} -u ${{ secrets.GITLAB_USERNAME }} -p ${{ secrets.GITLAB_TOKEN }}
+        fi
+      shell: bash
+    - name: Build Docker Image
+      id: docker_build_step
+      run: |
+        tag=${GITHUB_REF#refs/heads/}.$(git rev-parse --short HEAD)
+
+        docker build . --target cli -t ${{ inputs.registry }}/cli:${{ inputs.version }}
+        docker build . --target cron -t ${{ inputs.registry }}/cron:${{ inputs.version }}
+        docker build . --target fpm_server -t ${{ inputs.registry }}/fpm_server:${{ inputs.version }}
+        docker build . --target web_server -t ${{ inputs.registry }}/web_server:${{ inputs.version }}
+
+        echo "::set-output name=tag::$tag"
+      shell: bash
+    - name: Push Docker Image
+      run: |
+        docker push ${{ inputs.registry }}/cli:${{ inputs.version }}
+        docker push ${{ inputs.registry }}/cron:${{ inputs.version }}
+        docker push ${{ inputs.registry }}/fpm_server:${{ inputs.version }}
+        docker push ${{ inputs.registry }}/web_server:${{ inputs.version }}
+      shell: bash
