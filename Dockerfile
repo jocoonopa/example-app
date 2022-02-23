@@ -18,8 +18,8 @@ RUN addgroup -S composer \
     && chown -R composer /opt/apps/laravel-in-kubernetes \
     && apk add --virtual build-dependencies --no-cache ${PHPIZE_DEPS} openssl ca-certificates libxml2-dev oniguruma-dev \
     && docker-php-ext-install -j$(nproc) ${PHP_EXTS} \
-    && pecl install ${PHP_PECL_EXTS} \
-    && docker-php-ext-enable ${PHP_PECL_EXTS} \
+    # && pecl install ${PHP_PECL_EXTS} \
+    # && docker-php-ext-enable ${PHP_PECL_EXTS} \
     && apk del build-dependencies
 
 # Next we want to switch over to the composer user before running installs.
@@ -40,6 +40,12 @@ COPY --chown=composer composer.json composer.lock ./
 # This also helps us to cache previous runs and layers.
 # As long as comoser.json and composer.lock doesn't change the install will be cached.
 RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist
+
+# --no-scripts: Skips execution of scripts defined in composer.json.
+# --no-autoloader: Skips autoloader generation.
+# --prefer-dist: composer有編譯伺服器，如果從編譯伺服器獲取，那麼就可以繞開git伺服器了，這樣下載速度會更快，但是提交的代碼會有延遲，
+# 相對的是 --prefer-source，直接從git伺服器(比如：github)獲取原始碼，這樣如果git有提交，那麼可以迅速獲得最新代碼，但是下載速度會慢
+
 
 # Copy in our actual source code so we can run the installation scripts we need
 # At this point all the PHP packages have been installed,
@@ -82,8 +88,8 @@ WORKDIR /opt/apps/laravel-in-kubernetes
 # You can see a list of required extensions for Laravel here: https://laravel.com/docs/8.x/deployment#server-requirements
 RUN apk add --virtual build-dependencies --no-cache ${PHPIZE_DEPS} openssl ca-certificates libxml2-dev oniguruma-dev && \
     docker-php-ext-install -j$(nproc) ${PHP_EXTS} && \
-    pecl install ${PHP_PECL_EXTS} && \
-    docker-php-ext-enable ${PHP_PECL_EXTS} && \
+    # pecl install ${PHP_PECL_EXTS} && \
+    # docker-php-ext-enable ${PHP_PECL_EXTS} && \
     apk del build-dependencies
 
 # Next we have to copy in our code base from our initial build which we installed in the previous stage
@@ -104,8 +110,8 @@ WORKDIR /opt/apps/laravel-in-kubernetes
 
 RUN apk add --virtual build-dependencies --no-cache ${PHPIZE_DEPS} openssl ca-certificates libxml2-dev oniguruma-dev && \
     docker-php-ext-install -j$(nproc) ${PHP_EXTS} && \
-    pecl install ${PHP_PECL_EXTS} && \
-    docker-php-ext-enable ${PHP_PECL_EXTS} && \
+    # pecl install ${PHP_PECL_EXTS} && \
+    # docker-php-ext-enable ${PHP_PECL_EXTS} && \
     apk del build-dependencies
 
 # As FPM uses the www-data user when running our application,
@@ -122,6 +128,8 @@ COPY --from=frontend --chown=www-data /opt/apps/laravel-in-kubernetes/public /op
 RUN php artisan event:cache && \
     php artisan route:cache && \
     php artisan view:cache
+
+# 但是 mount 後不就被覆蓋了??
 
 # We need an nginx container which can pass requests to our FPM container,
 # as well as serve any static content.
