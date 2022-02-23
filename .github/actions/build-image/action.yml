@@ -29,17 +29,17 @@ runs:
       run: |
         tag=${GITHUB_REF#refs/heads/}.$(git rev-parse --short HEAD)
 
-        docker build . --target cli -t ${{ inputs.registry }}/cli:${{ inputs.version }}
-        docker build . --target cron -t ${{ inputs.registry }}/cron:${{ inputs.version }}
-        docker build . --target fpm_server -t ${{ inputs.registry }}/fpm_server:${{ inputs.version }}
-        docker build . --target web_server -t ${{ inputs.registry }}/web_server:${{ inputs.version }}
+        docker build . --target cli -t ${{ inputs.registryurl }}/cli:${{ inputs.version }}
+        docker build . --target cron -t ${{ inputs.registryurl }}/cron:${{ inputs.version }}
+        docker build . --target fpm_server -t ${{ inputs.registryurl }}/fpm_server:${{ inputs.version }}
+        docker build . --target web_server -t ${{ inputs.registryurl }}/web_server:${{ inputs.version }}
 
         echo "::set-output name=tag::$tag"
       shell: bash
     - name: Push Docker Image
       run: |
-        docker push ${{ inputs.registry }}/cli:${{ inputs.version }}
-        docker push ${{ inputs.registry }}/cron:${{ inputs.version }}
-        docker push ${{ inputs.registry }}/fpm_server:${{ inputs.version }}
-        docker push ${{ inputs.registry }}/web_server:${{ inputs.version }}
+        docker push ${{ inputs.registryurl }}/cli:${{ inputs.version }}
+        docker push ${{ inputs.registryurl }}/cron:${{ inputs.version }}
+        docker push ${{ inputs.registryurl }}/fpm_server:${{ inputs.version }}
+        docker push ${{ inputs.registryurl }}/web_server:${{ inputs.version }}
       shell: bash
