@@ -4,15 +4,24 @@ inputs:
   version:
     description: 'Target Docker version'
     required: true
+  username:
+    description: 'username'
+    required: true
+  token:
+    description: 'token'
+    required: true
+  registryurl:
+    description: 'registryurl'
+    required: true
 
 runs:
   using: "composite"
   steps:
     - name: Login to docker registry if private registry
       run: |
-        if [ ${{ secrets.GITLAB_USERNAME }} ]
+        if [ ${{ inputs.username }} ]
         then
-          sudo docker login ${{ secrets.GITLAB_REGISTRY_URL }} -u ${{ secrets.GITLAB_USERNAME }} -p ${{ secrets.GITLAB_TOKEN }}
+          sudo docker login ${{ inputs.registryurl }} -u ${{ inputs.username }} -p ${{ inputs.token }}
         fi
       shell: bash
     - name: Build Docker Image

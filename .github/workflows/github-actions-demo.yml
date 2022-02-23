@@ -12,3 +12,6 @@ jobs:
       - uses: ./.github/actions/build-image
         with:
           version: v0.0.5
+          username: ${{ secrets.GITLAB_USERNAME }}
+          token: ${{ secrets.GITLAB_TOKEN }}
+          registryurl: ${{ secrets.GITLAB_REGISTRY_URL }}
