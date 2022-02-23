@@ -1,5 +1,9 @@
 name: 'Docker Build And Push to registry GitHub Action'
 description: 'Docker Build And Push to registry GitHub Action'
+inputs:
+  version:
+    description: 'Target Docker version'
+    required: true
 
 runs:
   using: "composite"
