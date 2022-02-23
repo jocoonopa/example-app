@@ -21,7 +21,7 @@ runs:
       run: |
         if [ ${{ inputs.username }} ]
         then
-          sudo docker login ${{ inputs.registryurl }} -u ${{ inputs.username }} -p ${{ inputs.token }}
+          sudo docker login registry.gitlab.com -u ${{ inputs.username }} -p ${{ inputs.token }}
         fi
       shell: bash
     - name: Build Docker Image
