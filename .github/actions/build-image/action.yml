@@ -17,6 +17,8 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Copy ENV Laravel Configuration for CI
+      run: php -r "file_exists('.env') || copy('.env.ci', '.env');"
     - name: Build Docker Image
       id: docker_build_step
       run: |
