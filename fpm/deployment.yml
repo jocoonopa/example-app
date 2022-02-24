@@ -17,8 +17,27 @@ spec:
         tier: backend
         layer: fpm
     spec:
+      initContainers:
+        - name: migrations
+          envFrom:
+            - configMapRef:
+                name: laravel-in-kubernetes
+            - secretRef:
+                name: laravel-in-kubernetes
+          image: registry.gitlab.com/jocoonopa/example-app/cli:v0.0.7
+          command:
+            - php
+          args:
+            - artisan
+            - migrate
+            - --force
       containers:
         - name: fpm
-          image: registry.gitlab.com/jocoonopa/example-app/fpm_server:v0.0.6
+          envFrom:
+            - configMapRef:
+                name: laravel-in-kubernetes
+            - secretRef:
+                name: laravel-in-kubernetes
+          image: registry.gitlab.com/jocoonopa/example-app/fpm_server:v0.0.7
           ports:
             - containerPort: 9000

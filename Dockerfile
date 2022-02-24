@@ -98,7 +98,6 @@ RUN apk add --virtual build-dependencies --no-cache ${PHPIZE_DEPS} openssl ca-ce
 # either using the local image name, a tag available locally or on a Docker registry, or a tag ID
 COPY --from=composer_base /opt/apps/laravel-in-kubernetes /opt/apps/laravel-in-kubernetes
 COPY --from=frontend /opt/apps/laravel-in-kubernetes/public /opt/apps/laravel-in-kubernetes/public
-COPY .env.ci .env
 
 # We need a stage which contains FPM to actually run and process requests to our PHP application.
 FROM php:8.1-fpm-alpine as fpm_server
@@ -123,7 +122,6 @@ USER  www-data
 # We have to copy in our code base from our initial build which we installed in the previous stage
 COPY --from=composer_base --chown=www-data /opt/apps/laravel-in-kubernetes /opt/apps/laravel-in-kubernetes
 COPY --from=frontend --chown=www-data /opt/apps/laravel-in-kubernetes/public /opt/apps/laravel-in-kubernetes/public
-COPY .env.ci .env
 
 # We want to cache the event, routes, and views so we don't try to write them when we are in Kubernetes.
 # Docker builds should be as immutable as possible, and this removes a lot of the writing of the live application.

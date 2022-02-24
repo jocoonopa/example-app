@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: webserver
-          image: registry.gitlab.com/jocoonopa/example-app/web_server:v0.0.6
+          image: registry.gitlab.com/jocoonopa/example-app/web_server:v0.0.7
           ports:
             - containerPort: 80
           env:
