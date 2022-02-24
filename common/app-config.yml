@@ -15,6 +15,7 @@ data:
   LOG_CHANNEL: "stdout"
   LOG_LEVEL: "debug"
   DB_CONNECTION: "mysql"
+  # service name
   DB_HOST: "laravel-in-kubernetes-mysql"
   DB_PORT: "3306"
   DB_DATABASE: "laravel-in-kubernetes"
@@ -27,7 +28,9 @@ data:
   SESSION_DRIVER: "redis"
   SESSION_LIFETIME: "120"
   MEMCACHED_HOST: "memcached"
-  REDIS_HOST: "redis"
+
+  # service name
+  REDIS_HOST: "laravel-in-kubernetes-redis"
   REDIS_PORT: "6379"
   MAIL_MAILER: "smtp"
   MAIL_HOST: "mailhog"
