@@ -125,9 +125,7 @@ COPY --from=frontend --chown=www-data /opt/apps/laravel-in-kubernetes/public /op
 
 # We want to cache the event, routes, and views so we don't try to write them when we are in Kubernetes.
 # Docker builds should be as immutable as possible, and this removes a lot of the writing of the live application.
-RUN php artisan event:cache && \
-    php artisan route:cache && \
-    php artisan view:cache
+RUN php artisan optimize
 
 # 但是 mount 後不就被覆蓋了??
 
