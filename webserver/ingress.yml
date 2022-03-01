@@ -2,9 +2,26 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: laravel-in-kubernetes-webserver
+  annotations:
+    # Update to production
+    cert-manager.io/cluster-issuer: "laravel-in-kubernetes-production"
+    # We need to add the cluster issuer annotation
+    # cert-manager.io/cluster-issuer: "laravel-in-kubernetes-staging"
 spec:
   ingressClassName: nginx
+  defaultBackend:
+    service:
+      name: laravel-in-kubernetes-webserver
+      port:
+        number: 80
+  # We need to add a tls section
+  tls:
+  - hosts:
+    - exampleapp2.jocoonopa.com
+    secretName: laravel-in-kubernetes-tls
   rules:
+  # Your host
+  - host: exampleapp2.jocoonopa.com
   - http:
       paths:
       - path: /

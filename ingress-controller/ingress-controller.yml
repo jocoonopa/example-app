@@ -262,6 +262,9 @@ kind: Service
 metadata:
   annotations:
     service.beta.kubernetes.io/do-loadbalancer-enable-proxy-protocol: 'true'
+    # We need to add this annotation for the load balancer hostname to fix the bug
+    # Replace it with your domain or subdomain
+    service.beta.kubernetes.io/do-loadbalancer-hostname: "exampleapp2.jocoonopa.com"
   labels:
     helm.sh/chart: ingress-nginx-4.0.1
     app.kubernetes.io/name: ingress-nginx
